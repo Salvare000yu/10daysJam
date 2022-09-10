@@ -18,7 +18,8 @@ using namespace DirectX;
 
 #pragma region 初期化関数
 
-void PlayScene::cameraInit() {
+void PlayScene::cameraInit()
+{
 	camera.reset(new Camera(WinAPI::window_width, WinAPI::window_height));
 	camera->setFarZ(5000.f);
 	camera->setEye(XMFLOAT3(0, 0, -175));	// 視点座標
@@ -27,19 +28,20 @@ void PlayScene::cameraInit() {
 	camera->update();
 }
 
-void PlayScene::lightInit() {
+void PlayScene::lightInit()
+{
 	light.reset(new Light());
 }
 
-void PlayScene::soundInit() {
+void PlayScene::soundInit()
+{
 	bgm.reset(new Sound("Resources/BGM.wav"));
 
 	particleSE.reset(new Sound("Resources/SE/Sys_Set03-click.wav"));
 }
 
-void PlayScene::spriteInit() {
-
-
+void PlayScene::spriteInit()
+{
 	// --------------------
 	// スプライト共通
 	// --------------------
@@ -49,17 +51,14 @@ void PlayScene::spriteInit() {
 	debugTextTexNumber = spriteBase->loadTexture(L"Resources/debugfont.png");
 	// デバッグテキスト初期化
 	debugText.reset(new DebugText(debugTextTexNumber, spriteBase.get()));
-
-
 }
 
-void PlayScene::obj3dInit() {
-
+void PlayScene::obj3dInit()
+{
 	// 3Dオブジェクト用パイプライン生成
 	backPipelineSet = Object3d::createGraphicsPipeline(Object3d::BLEND_MODE::ALPHA,
 													   L"Resources/Shaders/BackVS.hlsl",
 													   L"Resources/Shaders/BackPS.hlsl");
-
 
 	// ----------
 	// 天球
@@ -69,8 +68,6 @@ void PlayScene::obj3dInit() {
 		const float backScale = camera->getFarZ() * 0.9f;
 		back->setScale({ backScale, backScale, backScale });
 	}
-
-
 
 	// ----------
 	// ボス
@@ -111,25 +108,27 @@ void PlayScene::obj3dInit() {
 	}
 }
 
-void PlayScene::particleInit() {
+void PlayScene::particleInit()
+{
 	particleMgr.reset(new ParticleMgr(L"Resources/effect1.png", camera.get()));
 }
-void PlayScene::playerInit() {
+void PlayScene::playerInit()
+{
 	playerModel = std::make_unique<ObjModel>("Resources/sphere", "sphere", 0U, true);
 	player = std::make_unique<Player>(camera.get(), playerModel.get(), XMFLOAT3(0, 10, -300));
 	player->setScale(10.f);
 }
 
-void PlayScene::timerInit() {
+void PlayScene::timerInit()
+{
 	timer.reset(new Time());
 }
 
 PlayScene::PlayScene()
 	: update_proc(std::bind(&PlayScene::update_start, this)),
 	dxBase(DX12Base::getInstance()),
-	input(Input::getInstance()) {
-
-
+	input(Input::getInstance())
+{
 	cameraInit();
 
 	lightInit();
@@ -147,7 +146,8 @@ PlayScene::PlayScene()
 	timerInit();
 }
 
-void PlayScene::start() {
+void PlayScene::start()
+{
 	// マウスカーソルは表示しない
 	input->changeDispMouseCursorFlag(false);
 	// BGM再生
@@ -160,20 +160,25 @@ void PlayScene::start() {
 
 #pragma region 更新関数
 
-void PlayScene::updateSound() {
+void PlayScene::updateSound()
+{
 	// 数字の0キーが押された瞬間音を再生しなおす
-	if (input->triggerKey(DIK_0)) {
+	if (input->triggerKey(DIK_0))
+	{
 		//Sound::SoundStopWave(bgm);
 
-		if (Sound::checkPlaySound(bgm.get())) {
+		if (Sound::checkPlaySound(bgm.get()))
+		{
 			Sound::SoundStopWave(bgm.get());
-		} else {
+		} else
+		{
 			Sound::SoundPlayWave(bgm.get(), XAUDIO2_LOOP_INFINITE);
 		}
 	}
 }
 
-void PlayScene::updateMouse() {
+void PlayScene::updateMouse()
+{
 	constexpr XMFLOAT2 centerPos = XMFLOAT2((float)WinAPI::window_width / 2.f,
 											(float)WinAPI::window_height / 2.f);
 
@@ -184,7 +189,8 @@ void PlayScene::updateMouse() {
 	input->setMousePos((int)centerPos.x, (int)centerPos.y);
 }
 
-void PlayScene::updateCamera() {
+void PlayScene::updateCamera()
+{
 	// カメラの距離
 	constexpr float camLen = 64.f;
 	// カメラの高さ
@@ -206,7 +212,7 @@ void PlayScene::updateCamera() {
 
 		player->setRotation(rota);
 	}
-	const XMVECTOR &look = player->getLookVec();
+	const XMVECTOR& look = player->getLookVec();
 
 	// 自機->カメラのベクトル
 	const XMVECTOR player2cam = XMVectorAdd(XMVectorScale(look, -camLen),
@@ -233,18 +239,19 @@ void PlayScene::updateCamera() {
 	}
 }
 
-void PlayScene::updateLight() {
+void PlayScene::updateLight()
+{
 	XMFLOAT3 pos = camera->getEye();
 
 	light->setLightPos(pos);
 }
 
-void PlayScene::updateSprite() {
-
+void PlayScene::updateSprite()
+{
 }
 
-void PlayScene::updatePlayer() {
-
+void PlayScene::updatePlayer()
+{
 	// 移動
 	{
 		const bool hitW = input->hitKey(DIK_W);
@@ -252,19 +259,24 @@ void PlayScene::updatePlayer() {
 		const bool hitS = input->hitKey(DIK_S);
 		const bool hitD = input->hitKey(DIK_D);
 
-		if (hitW || hitA || hitS || hitD) {
+		if (hitW || hitA || hitS || hitD)
+		{
 			// 移動速度は毎秒256.f
 			const float moveVel = 256.f / dxBase->getFPS();
 
-			if (hitW) {
+			if (hitW)
+			{
 				player->moveForward(moveVel);
-			} else if (hitS) {
+			} else if (hitS)
+			{
 				player->moveForward(-moveVel);
 			}
 
-			if (hitA) {
+			if (hitA)
+			{
 				player->moveRight(-moveVel);
-			} else if (hitD) {
+			} else if (hitD)
+			{
 				player->moveRight(moveVel);
 			}
 		}
@@ -277,7 +289,8 @@ void PlayScene::updatePlayer() {
 
 		// playerBul.secondは生存フラグ
 
-		if (shootInput && !playerBul.second) {
+		if (shootInput && !playerBul.second)
+		{
 			playerBul.second = true;
 			playerBul.first->setPos(camera->getEye());
 			// todo 自機から出るようにする
@@ -304,14 +317,17 @@ void PlayScene::updatePlayer() {
 		const bool hitBoss = Collision::CheckSphere2Sphere(playerSphere, bossSphere);
 
 		// 自機がボスに当たったら終了
-		if (hitBoss) {
+		if (hitBoss)
+		{
 			changeEndScene();
 		}
 	}
 }
 
-void PlayScene::updatePlayerBullet() {
-	if (playerBul.second) {
+void PlayScene::updatePlayerBullet()
+{
+	if (playerBul.second)
+	{
 		XMFLOAT3 pos = playerBul.first->getPos();
 
 		constexpr float speed = 10.f;
@@ -328,7 +344,6 @@ void PlayScene::updatePlayerBullet() {
 			pBul.radius = playerBul.first->getScale().x;
 			const Time::timeType pBulStartTime = *playerBulStartTime;
 			const Time::timeType pBulNowTime = timer->getNowTime() - pBulStartTime;
-
 
 			Sphere bossCol{};
 			bossCol.center = XMLoadFloat3(&boss->getPos());
@@ -348,12 +363,14 @@ void PlayScene::updatePlayerBullet() {
 
 			const bool lifeEnd = pBulNowTime > bulLife;
 
-			if (lifeEnd || hitBoss || hitGround) {
+			if (lifeEnd || hitBoss || hitGround)
+			{
 				playerBul.second = false;
 				playerBulStartTime.reset();
 
 				// 弾がボスに当たったら終了
-				if (hitBoss) {
+				if (hitBoss)
+				{
 					// ボスの描画をやめる
 					bossAlive = false;
 
@@ -371,7 +388,8 @@ void PlayScene::updatePlayerBullet() {
 	}
 }
 
-void PlayScene::updateBoss() {
+void PlayScene::updateBoss()
+{
 	const float moveRange = boss->getScale().x * 5.f;
 	XMFLOAT3 bossPos = boss->getPos();
 
@@ -382,24 +400,26 @@ void PlayScene::updateBoss() {
 	boss->setPos(bossPos);
 }
 
-void PlayScene::update_play() {
-
+void PlayScene::update_play()
+{
 	// SPACE + 左シフトでENDシーンへ
-	if (input->triggerKey(DIK_SPACE) && input->hitKey(DIK_LSHIFT)) {
+	if (input->triggerKey(DIK_SPACE) && input->hitKey(DIK_LSHIFT))
+	{
 		changeEndScene();
 	}
 
 	// Rでタイマーをリセット
 	if (input->hitKey(DIK_R)) timer->reset();
 
-	if (input->triggerKey(DIK_M)) {
+	if (input->triggerKey(DIK_M))
+	{
 		UINT nextEffNum = 0u;
-		if (PostEffect::getInstance()->getPipeLineNum() == 0u) {
+		if (PostEffect::getInstance()->getPipeLineNum() == 0u)
+		{
 			nextEffNum = SceneManager::getInstange()->getPostEff2Num();
 		}
 		PostEffect::getInstance()->changePipeLine(nextEffNum);
 	}
-
 
 	// 音関係の更新
 	updateSound();
@@ -428,7 +448,8 @@ void PlayScene::update_play() {
 
 #pragma endregion 更新関数
 
-void PlayScene::update() {
+void PlayScene::update()
+{
 	{
 		// シーン遷移中も背景は回す
 		XMFLOAT3 backRota = back->getRotation();
@@ -454,10 +475,12 @@ void PlayScene::update() {
 }
 
 // シーン開始時の演出用
-void PlayScene::update_start() {
+void PlayScene::update_start()
+{
 	drawAlpha = (float)timer->getNowTime() / sceneTransTime;
 
-	if (drawAlpha > 1.f) {
+	if (drawAlpha > 1.f)
+	{
 		drawAlpha = 1.f;
 
 		timer->reset();
@@ -479,11 +502,13 @@ void PlayScene::update_start() {
 }
 
 // シーン終了時の演出用
-void PlayScene::update_end() {
+void PlayScene::update_end()
+{
 	const float raito = (float)timer->getNowTime() / sceneTransTime;
 
 	drawAlpha = 1.f - raito;
-	if (raito > 1.f) {
+	if (raito > 1.f)
+	{
 		drawAlpha = 0.f;
 
 		// マウスカーソルは表示させてから終了
@@ -507,9 +532,11 @@ void PlayScene::update_end() {
 	PostEffect::getInstance()->setMosaicNum(mosNum);
 }
 
-void PlayScene::changeEndScene() {
+void PlayScene::changeEndScene()
+{
 	// BGMが鳴っていたら停止する
-	if (Sound::checkPlaySound(bgm.get())) {
+	if (Sound::checkPlaySound(bgm.get()))
+	{
 		Sound::SoundStopWave(bgm.get());
 	}
 
@@ -523,8 +550,8 @@ void PlayScene::changeEndScene() {
 	timer->reset();
 }
 
-void PlayScene::drawObj3d() {
-
+void PlayScene::drawObj3d()
+{
 	Object3d::startDraw(backPipelineSet);
 	back->drawWithUpdate(light.get());
 
@@ -537,7 +564,8 @@ void PlayScene::drawObj3d() {
 	particleMgr->drawWithUpdate();
 }
 
-void PlayScene::drawFrontSprite() {
+void PlayScene::drawFrontSprite()
+{
 	drawImGui();
 
 	spriteBase->drawStart(dxBase->getCmdList());
@@ -550,7 +578,8 @@ void PlayScene::drawFrontSprite() {
 	debugText->DrawAll(dxBase, spriteBase.get());
 }
 
-void PlayScene::drawImGui() {
+void PlayScene::drawImGui()
+{
 	constexpr ImGuiWindowFlags winFlags =
 		// リサイズ不可
 		ImGuiWindowFlags_::ImGuiWindowFlags_NoResize
@@ -564,7 +593,6 @@ void PlayScene::drawImGui() {
 	// 最初のウインドウの位置を指定
 	ImGui::SetNextWindowPos(ImVec2(20, 20));
 
-
 	ImGui::Begin("内容説明", nullptr, winFlags);
 	ImGui::Text("弾をでかい球体に当てたらクリア");
 	ImGui::Text("でかい球と自分が当たったら失敗");
@@ -572,7 +600,8 @@ void PlayScene::drawImGui() {
 	ImGui::SetNextWindowPos(getWindowLBPos());
 	ImGui::End();
 
-	if (guiWinAlive) {
+	if (guiWinAlive)
+	{
 		ImGui::Begin("情報表示", &guiWinAlive, winFlags);
 		//ImGui::SetWindowPos(ImVec2(20, 20));
 		ImGui::SetWindowSize(ImVec2(150, 150));
@@ -606,12 +635,13 @@ void PlayScene::drawImGui() {
 	ImGui::End();
 }
 
-void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos,
+void PlayScene::createParticle(const DirectX::XMFLOAT3& pos,
 							   const UINT particleNum,
 							   const float startScale,
-							   const float vel) {
-	for (UINT i = 0U; i < particleNum; ++i) {
-
+							   const float vel)
+{
+	for (UINT i = 0U; i < particleNum; ++i)
+	{
 		const float theata = RandomNum::getRandf(0, XM_PI);
 		const float phi = RandomNum::getRandf(0, XM_PI * 2.f);
 		const float r = RandomNum::getRandf(0, vel);
@@ -641,7 +671,8 @@ void PlayScene::createParticle(const DirectX::XMFLOAT3 &pos,
 	}
 }
 
-PlayScene::~PlayScene() {
+PlayScene::~PlayScene()
+{
 	PostEffect::getInstance()->setAlpha(1.f);
 	PostEffect::getInstance()->setMosaicNum(XMFLOAT2(WinAPI::window_width, WinAPI::window_height));
 }
