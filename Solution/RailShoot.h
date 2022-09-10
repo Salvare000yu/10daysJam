@@ -95,21 +95,51 @@ class RailShoot
 					char divChar = ',',
 					const std::string& commentStartStr = "//");
 
-	struct PopEnemyData
+	struct PushEnemyData
 	{
-		UINT popFrame;
+		UINT popTime;
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 vel{ 0,0,-1 };
-		PopEnemyData(UINT popFrame,
-					 const DirectX::XMFLOAT3& pos,
-					 const DirectX::XMFLOAT3& vel)
-			: popFrame(popFrame), pos(pos), vel(vel)
-		{
-		}
 	};
 
-	std::forward_list<std::unique_ptr<PopEnemyData>> enemyPopData;
-	UINT nowFrame = 0u;
+	std::forward_list<std::unique_ptr<PushEnemyData>> enemyPopData;
+
+	struct MusicData
+	{
+		float bpm = 120.f;
+		float startDiffBeatCount = 0;
+	};
+	std::unique_ptr<MusicData> musicData;
+	float oneBeatTime = Time::oneSecF / 2.f;
+
+
+	class ElapsedTime
+	{
+	private:
+		Time::timeType startTime{};
+		Time::timeType nowTime{};
+
+		Time* timer = nullptr;
+
+	public:
+		ElapsedTime(Time* timer)
+			: timer(timer), startTime(0), nowTime(0)
+		{
+		}
+
+		inline const Time::timeType& getNowTime() { return nowTime; }
+		inline const Time::timeType& getStartTime() { return startTime; }
+
+		void start(Time::timeType startDiffBeatCount = 0)
+		{
+			startTime = timer->getNowTime() + startDiffBeatCount;
+		}
+		void update()
+		{
+			nowTime = timer->getNowTime() - startTime;
+		}
+	};
+	std::unique_ptr<ElapsedTime> musicTimer;
 
 	void createParticle(const DirectX::XMFLOAT3& pos,
 						const UINT particleNum = 10U,

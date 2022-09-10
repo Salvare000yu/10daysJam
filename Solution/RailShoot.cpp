@@ -211,20 +211,56 @@ RailShoot::RailShoot()
 
 	// 敵発生スクリプト
 	csvData = loadCsv("Resources/enemyScript.csv", true, ',', "//");
+
+	// --- 曲の時間
+	musicTimer = std::make_unique<ElapsedTime>(timer.get());
+
+	// --- 曲情報
+	musicData = std::make_unique<MusicData>();
+
+	bool setStartDiffTimeFlag = false;
+	bool setBpmFlag = false;
 	{
-		UINT waitFrame = 0u;
 		for (auto& y : csvData)
 		{
-			if (y[0] == "WAIT")
+			// 列数
+			const size_t ySize = y.size();
+
+			// 空の行は無視
+			if (ySize == 0u) { continue; }
+
+			if (y[0] == "startDiffBeatCount")
 			{
-				waitFrame += (UINT)std::stoi(y[1]);
-			} else if (y[0] == "PUSH")
+				if (!setStartDiffTimeFlag && ySize >= 2U)
+				{
+					setStartDiffTimeFlag = true;
+					// 開始遅延拍数を保存
+					musicData->startDiffBeatCount = std::stof(y[1]);
+				}
+			} else if (y[0] == "bpm" || y[0] == "BPM")
 			{
-				enemyPopData.emplace_front(std::make_unique<PopEnemyData>(waitFrame,
-																		  XMFLOAT3(std::stof(y[1]),
-																				   std::stof(y[2]),
-																				   std::stof(y[3])),
-																		  XMFLOAT3(0, 0, -1)));
+				if (!setBpmFlag && ySize >= 2U)
+				{
+					setBpmFlag = true;
+					musicData->bpm = std::stof(y[1]);
+					oneBeatTime = 60.f * Time::oneSecF / musicData->bpm;
+				}
+			} else
+			{
+				auto& newData = enemyPopData.emplace_front(new PushEnemyData());
+				newData->popTime = std::stof(y[0]) * oneBeatTime;
+				if (ySize >= 4U)
+				{
+					newData->pos.x = std::stof(y[1]);
+					newData->pos.y = std::stof(y[2]);
+					newData->pos.z = std::stof(y[3]);
+				} else
+				{
+					newData->pos.x = 0.f;
+					newData->pos.y = 0.f;
+					newData->pos.z = 50.f;
+				}
+				newData->vel = XMFLOAT3(0, 0, -1);
 			}
 		}
 	}
@@ -251,8 +287,6 @@ RailShoot::RailShoot()
 
 void RailShoot::start()
 {
-	// タイマー開始
-	timer->reset();
 	startSceneChangeTime = timer->getNowTime();
 }
 
@@ -346,6 +380,9 @@ void RailShoot::update_start()
 		PostEffect::getInstance()->changePipeLine(SceneManager::getInstange()->getPostEff2Num());
 
 		update_proc = std::bind(&RailShoot::update_play, this);
+
+		// 曲開始
+		musicTimer->start(musicData->startDiffBeatCount * oneBeatTime);
 	}
 
 	const float timeRaito = (float)nowTime / sceneChangeTime;
@@ -369,6 +406,9 @@ void RailShoot::update_play()
 
 #endif // _DEBUG
 
+	// 曲の時間更新
+	musicTimer->update();
+
 	player->setAim2DPos(XMFLOAT2((float)input->getMousePos().x,
 								 (float)input->getMousePos().y));
 
@@ -377,9 +417,9 @@ void RailShoot::update_play()
 	// --------------------
 
 	// 終わった発生情報は削除
-	enemyPopData.remove_if([&](std::unique_ptr<PopEnemyData>& i)
+	enemyPopData.remove_if([&](std::unique_ptr<PushEnemyData>& i)
 						   {
-							   const bool ended = nowFrame >= i->popFrame;
+							   const bool ended = musicTimer->getNowTime() >= i->popTime;
 							   if (ended)
 							   {
 								   addEnemy(i->pos, i->vel);
@@ -607,15 +647,12 @@ void RailShoot::update_play()
 		// 敵がすべて消えたら次のシーンへ
 		if (enemy.empty() && enemyPopData.empty())
 		{
-			changeNextScene();
+			//changeNextScene();
 		}
 	}
 
 	// ライトはカメラの位置にする
 	light->setLightPos(camera->getEye());
-
-	// 今のフレームを進める
-	++nowFrame;
 }
 
 void RailShoot::update_end()
@@ -681,8 +718,9 @@ void RailShoot::drawFrontSprite()
 	ImGui::Begin("情報", nullptr, winFlags);
 	ImGui::Text("FPS : %.3f", dxBase->getFPS());
 	ImGui::Text("敵数 : %u", std::distance(enemy.begin(), enemy.end()));
-	ImGui::Text("経過フレーム : %u", nowFrame);
+	ImGui::Text("経過拍数 : %.2f", (float)musicTimer->getNowTime()/ oneBeatTime);
 	ImGui::Text("自機体力 : %u", playerHp);
+	ImGui::Text("%s", enemyPopData.empty() ? "敵なし" : "敵有り有り");
 	ImGui::End();
 
 	spriteBase->drawStart(dxBase->getCmdList());
