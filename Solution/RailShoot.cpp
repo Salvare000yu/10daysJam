@@ -123,7 +123,7 @@ RailShoot::RailShoot()
 	// --------------------
 	// 自機関連
 	// --------------------
-	playerModel(std::make_unique<ObjModel>("Resources/box", "box")),
+	playerModel(std::make_unique<ObjModel>("Resources/player", "player")),
 	playerBulModel(std::make_unique<ObjModel>("Resources/sphere", "sphere", 0U, true)),
 	playerHp(20u),
 
