@@ -11,6 +11,9 @@ GameOverScene::GameOverScene() :
 {
 	const UINT debugTextTexNumber = spBase->loadTexture(L"Resources/debugfont.png");
 	debugText.reset(new DebugText(debugTextTexNumber, spBase.get()));
+
+	const UINT spNum = spBase->loadTexture(L"Resources/failed.png");
+	sprite.reset(new Sprite(spNum, spBase.get(), { 0,0 }));
 }
 
 void GameOverScene::update()
@@ -21,8 +24,6 @@ void GameOverScene::update()
 
 	constexpr float headScale = 8.f;
 	constexpr float headHei = DebugText::fontHeight * headScale;
-
-	debugText->Print(spBase.get(), "GameOver", textPos.x, textPos.y, headScale);
 
 	debugText->formatPrint(spBase.get(),
 						   textPos.x,
@@ -52,5 +53,6 @@ void GameOverScene::drawObj3d()
 void GameOverScene::drawFrontSprite()
 {
 	spBase->drawStart(DX12Base::getInstance()->getCmdList());
+	sprite->drawWithUpdate(DX12Base::getInstance(), spBase.get());
 	debugText->DrawAll(DX12Base::getInstance(), spBase.get());
 }

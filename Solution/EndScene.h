@@ -18,6 +18,11 @@ class EndScene :
 	// デバッグテキスト用のテクスチャ番号
 	UINT debugTextTexNumber;
 
+	// --------------------
+	// スプライト
+	// --------------------
+	std::unique_ptr<Sprite> sprite;
+
 	Input* input = nullptr;
 
 public:

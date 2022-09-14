@@ -13,6 +13,7 @@ private:
 	std::unique_ptr<SpriteBase> spBase;
 
 	std::unique_ptr<DebugText> debugText;
+	std::unique_ptr<Sprite> sprite;
 
 public:
 	GameOverScene();

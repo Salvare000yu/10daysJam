@@ -23,6 +23,10 @@ EndScene::EndScene()
 	debugTextTexNumber = spCom->loadTexture(L"Resources/debugfont.png");
 
 	debugText.reset(new DebugText(debugTextTexNumber, spCom.get()));
+
+	const UINT spriteNum = spCom->loadTexture(L"Resources/clear.png");
+
+	sprite.reset(new Sprite(spriteNum, spCom.get(), { 0,0 }));
 }
 
 void EndScene::update()
@@ -50,7 +54,6 @@ void EndScene::update()
 						   "Score : %u",
 						   SceneManager::getInstange()->score->killEnemyNum);
 
-	debugText->Print(spCom.get(), "END", 0, 0, headScale);
 	{
 		constexpr XMFLOAT2 strPos = XMFLOAT2(DebugText::fontWidth * 1.5f,
 											 WinAPI::window_height - DebugText::fontHeight * 1.5f);
@@ -61,5 +64,6 @@ void EndScene::update()
 void EndScene::drawFrontSprite()
 {
 	spCom->drawStart(DX12Base::getInstance()->getCmdList());
+	sprite->drawWithUpdate(DX12Base::getInstance(), spCom.get());
 	debugText->DrawAll(DX12Base::getInstance(), spCom.get());
 }

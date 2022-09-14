@@ -51,14 +51,14 @@ void TitleScene::update()
 {
 	update_proc();
 
-	constexpr XMFLOAT2 strPos = XMFLOAT2(DebugText::fontWidth * 1.5f, WinAPI::window_height - DebugText::fontHeight * 1.5f);
-	debugText->Print(spCom.get(), "Press SPACE...", strPos.x, strPos.y, 1.f);
-
 	light->update();
 }
 
 void TitleScene::update_normal()
 {
+	constexpr XMFLOAT2 strPos = XMFLOAT2(DebugText::fontWidth * 1.5f, WinAPI::window_height - DebugText::fontHeight * 1.5f);
+	debugText->Print(spCom.get(), "Press SPACE...", strPos.x, strPos.y, 1.f);
+
 	if (input->triggerKey(DIK_SPACE))
 	{
 		update_proc = std::bind(&TitleScene::update_end, this);
