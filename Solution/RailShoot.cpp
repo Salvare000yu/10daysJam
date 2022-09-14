@@ -174,6 +174,7 @@ RailShoot::RailShoot()
 	// bgm初期化
 	// --------------------
 	bgm.reset(new Sound("Resources/10daysJam.wav"));
+	particleSE.reset(new Sound("Resources/10daysJam_EnemExpr.wav"));
 
 	// --------------------
 	// レール現在位置のオブジェクト
@@ -643,6 +644,8 @@ void RailShoot::update_play()
 				{
 					// パーティクルを生成
 					createParticle(e->getPos(), 98U, 32.f, 16.f);
+					Sound::SoundPlayWave(particleSE.get());
+
 					// 敵も自機弾もさよなら
 					e->kill();
 					pb.kill();

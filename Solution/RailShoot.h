@@ -35,6 +35,8 @@ class RailShoot
 	std::unique_ptr<Time> timer;
 
 	std::unique_ptr<Sound> bgm;
+
+	std::unique_ptr<Sound> particleSE;
 	bool playBgmFlag = false;
 
 	// --------------------
