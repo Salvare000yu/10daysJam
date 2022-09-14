@@ -5,6 +5,8 @@
 
 #include "Input.h"
 
+#include "ObjSet.h"
+
 #include <memory>
 
 #include <DirectXMath.h>
@@ -22,9 +24,12 @@ class TitleScene :
 	// デバッグテキスト用のテクスチャ番号
 	UINT debugTextTexNumber;
 
-	Input* input = nullptr;
+	// 3D
+	std::unique_ptr<Light> light;
+	std::unique_ptr<Camera> camera;
+	std::unique_ptr<ObjSet> logoObj;
 
-	DirectX::XMFLOAT2 titleStrPos{};
+	Input* input = nullptr;
 
 	// update_何とか関数を格納する
 	std::function<void()> update_proc;
@@ -35,5 +40,7 @@ class TitleScene :
 public:
 	TitleScene();
 	void update() override;
+	void drawObj3d() override;
 	void drawFrontSprite() override;
+	void end() override;
 };

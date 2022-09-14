@@ -20,6 +20,7 @@ void SceneManager::update()
 	// 次のシーンがあったら
 	if (nextScene != nullptr)
 	{
+		nowScene->end();
 		// 今のシーンを削除し、次のシーンに入れ替える
 		delete nowScene;
 		nowScene = nextScene;

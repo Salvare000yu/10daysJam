@@ -207,5 +207,5 @@ public:
 	void drawObj3d() override;
 	void drawFrontSprite() override;
 
-	~PlayScene() override;
+	~PlayScene();
 };

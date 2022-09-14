@@ -248,7 +248,7 @@ RailShoot::RailShoot()
 			} else
 			{
 				auto& newData = enemyPopData.emplace_front(new PushEnemyData());
-				newData->popTime = std::stof(y[0]) * oneBeatTime;
+				newData->popTime = UINT(std::stof(y[0]) * oneBeatTime);
 				if (ySize >= 4U)
 				{
 					newData->pos.x = std::stof(y[1]);
@@ -718,9 +718,9 @@ void RailShoot::drawFrontSprite()
 	ImGui::Begin("情報", nullptr, winFlags);
 	ImGui::Text("FPS : %.3f", dxBase->getFPS());
 	ImGui::Text("敵数 : %u", std::distance(enemy.begin(), enemy.end()));
-	ImGui::Text("経過拍数 : %.2f", (float)musicTimer->getNowTime()/ oneBeatTime);
+	ImGui::Text("経過拍数 : %.2f", (float)musicTimer->getNowTime() / oneBeatTime);
 	ImGui::Text("自機体力 : %u", playerHp);
-	ImGui::Text("%s", enemyPopData.empty() ? "敵なし" : "敵有り有り");
+	ImGui::Text("%s", enemyPopData.empty() ? "未発生敵なし" : "未発生敵有り有り");
 	ImGui::End();
 
 	spriteBase->drawStart(dxBase->getCmdList());

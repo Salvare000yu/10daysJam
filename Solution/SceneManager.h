@@ -26,7 +26,7 @@ public:
 		return sm.get();
 	}
 
-	~SceneManager() override;
+	~SceneManager();
 
 	void update() override;
 	void drawObj3d() override;
