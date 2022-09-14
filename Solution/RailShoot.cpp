@@ -294,9 +294,6 @@ RailShoot::RailShoot()
 
 void RailShoot::start()
 {
-	// BGM再生
-	Sound::SoundPlayWave(bgm.get(), 0);
-
 	startSceneChangeTime = timer->getNowTime();
 }
 
@@ -434,6 +431,12 @@ void RailShoot::update_play()
 
 	// 曲の時間更新
 	musicTimer->update();
+	if (!playBgmFlag && musicTimer->getNowTime() >= 0)
+	{
+		// BGM再生
+		Sound::SoundPlayWave(bgm.get(), 0);
+		playBgmFlag = true;
+	}
 
 	player->setAim2DPos(XMFLOAT2((float)input->getMousePos().x,
 								 (float)input->getMousePos().y));

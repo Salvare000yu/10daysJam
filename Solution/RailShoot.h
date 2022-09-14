@@ -35,6 +35,7 @@ class RailShoot
 	std::unique_ptr<Time> timer;
 
 	std::unique_ptr<Sound> bgm;
+	bool playBgmFlag = false;
 
 	// --------------------
 	// スプライト
@@ -120,8 +121,8 @@ class RailShoot
 
 	struct PushEnemyData
 	{
-		UINT popTime;
-		DirectX::XMFLOAT3 pos;
+		UINT popTime = 0u;
+		DirectX::XMFLOAT3 pos{ 0,0,0 };
 		DirectX::XMFLOAT3 vel{ 0,0,-1 };
 	};
 
