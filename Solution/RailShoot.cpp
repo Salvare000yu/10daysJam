@@ -680,10 +680,8 @@ void RailShoot::update_play()
 						// HPが無くなったら次のシーンへ進む
 						if (--playerHp <= 0u)
 						{
-							// 譜面作りのためにいったんコメントアウト
-							// todo 譜面を作り終わったら元に戻す
-							/*changeGameOverScene();
-							player->kill();*/
+							changeGameOverScene();
+							player->kill();
 						}
 					}
 				}
