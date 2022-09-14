@@ -582,16 +582,8 @@ void RailShoot::update_play()
 		} else
 		{
 			player->setShotTarget(nullptr);
-			aim2D->color = XMFLOAT4(0, 0, 0, 1);
+			aim2D->color = XMFLOAT4(1, 1, 1, 1);
 		}
-#ifdef _DEBUG
-		// 照準の中に敵がいるかどうかを表示
-		debugText->formatPrint(spriteBase.get(),
-							   300.f, 0.f,
-							   1.f,
-							   { 1,1,1,1 },
-							   "%s", farthestEnemyPt != nullptr ? "IN" : "NO_ENEMY");
-#endif // _DEBUG
 	}
 
 	// --------------------
