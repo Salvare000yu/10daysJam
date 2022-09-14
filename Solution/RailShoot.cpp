@@ -2,13 +2,15 @@
 #include <DirectXMath.h>
 
 #include "SceneManager.h"
-#include "PlayScene.h"
+#include "EndScene.h"
 
 #include "PostEffect.h"
 
 #include "Collision.h"
 
 #include "RandomNum.h"
+
+#include "GameOverScene.h"
 
 #include <fstream>
 
@@ -374,7 +376,23 @@ void RailShoot::addEnemy(const DirectX::XMFLOAT3& pos, const DirectX::XMFLOAT3& 
 
 void RailShoot::changeNextScene()
 {
+	// ポストエフェクトをもとに戻す
 	PostEffect::getInstance()->changePipeLine(0U);
+
+	// 結果を記録
+	playResult = PLAY_RESULT::CLEAR;
+
+	update_proc = std::bind(&RailShoot::update_end, this);
+	startSceneChangeTime = timer->getNowTime();
+}
+
+void RailShoot::changeGameOverScene()
+{
+	// ポストエフェクトを戻す
+	PostEffect::getInstance()->changePipeLine(0U);
+
+	// 結果を記録
+	playResult = PLAY_RESULT::FAILED;
 
 	update_proc = std::bind(&RailShoot::update_end, this);
 	startSceneChangeTime = timer->getNowTime();
@@ -409,7 +427,7 @@ void RailShoot::update_play()
 
 	if (input->hitKey(DIK_LSHIFT) && input->hitKey(DIK_SPACE))
 	{
-		changeNextScene();
+		changeGameOverScene();
 	}
 
 #endif // _DEBUG
@@ -611,6 +629,7 @@ void RailShoot::update_play()
 					// 敵も自機弾もさよなら
 					e->kill();
 					pb.kill();
+					++killEnemyNum;
 				}
 			}
 		}
@@ -641,7 +660,7 @@ void RailShoot::update_play()
 						// HPが無くなったら次のシーンへ進む
 						if (--playerHp <= 0u)
 						{
-							changeNextScene();
+							changeGameOverScene();
 							player->kill();
 						}
 					}
@@ -655,7 +674,7 @@ void RailShoot::update_play()
 		// 敵がすべて消えたら次のシーンへ
 		if (enemy.empty() && enemyPopData.empty())
 		{
-			//changeNextScene();
+			changeNextScene();
 		}
 	}
 
@@ -665,19 +684,35 @@ void RailShoot::update_play()
 
 void RailShoot::update_end()
 {
+	// 経過時間を記録
 	const Time::timeType nowTime = timer->getNowTime() - startSceneChangeTime;
+
+	// 時間が来たら次のシーンへ
 	if (nowTime >= sceneChangeTime)
 	{
-		SceneManager::getInstange()->changeScene(new PlayScene());
+		GameScene* nextScene = nullptr;
+		if (playResult == PLAY_RESULT::CLEAR)
+		{
+			nextScene = new EndScene();
+		} else { nextScene = new GameOverScene(); }
+
+		// 次のシーンを指定
+		SceneManager::getInstange()->changeScene(nextScene);
+
+		// スコアを記録
+		SceneManager::getInstange()->score->killEnemyNum = killEnemyNum;
 	}
 
+	// 経過割合を記録
 	const float timeRaito = (float)nowTime / sceneChangeTime;
 	PostEffect::getInstance()->setAlpha(1.f - timeRaito);
 
+	// 経過割合に応じてモザイクをかける
 	const float mosCoe = powf(1.f - timeRaito, 5);
 	PostEffect::getInstance()->setMosaicNum(XMFLOAT2(WinAPI::window_width * mosCoe,
 													 WinAPI::window_height * mosCoe));
 
+	// 経過割合に応じてノイズをかける
 	PostEffect::getInstance()->setNoiseIntensity(1.f - timeRaito);
 }
 
@@ -737,10 +772,17 @@ void RailShoot::drawFrontSprite()
 	debugText->DrawAll(dxBase, spriteBase.get());
 }
 
-RailShoot::~RailShoot()
+void RailShoot::end()
 {
+	Sound::SoundStopWave(bgm.get());
+
 	PostEffect::getInstance()->setAlpha(1.f);
 	PostEffect::getInstance()->setMosaicNum(XMFLOAT2(WinAPI::window_width,
 													 WinAPI::window_height));
 	PostEffect::getInstance()->changePipeLine(0U);
+}
+
+RailShoot::~RailShoot()
+{
+
 }

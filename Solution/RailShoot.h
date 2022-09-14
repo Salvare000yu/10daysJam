@@ -88,6 +88,25 @@ class RailShoot
 	static const UINT splineIndexDef = 1u;
 	UINT splineIndex = splineIndexDef;
 
+	// --------------------
+	// プレイ結果
+	// --------------------
+
+	UINT killEnemyNum = 0u;
+
+	/// @brief プレイ結果
+	enum class PLAY_RESULT : uint8_t
+	{
+		UNDEF,	// 未定義
+		CLEAR,	// 成功
+		FAILED	// 失敗
+	};
+	PLAY_RESULT playResult = PLAY_RESULT::UNDEF;
+
+	// --------------------
+	// 敵発生制御
+	// --------------------
+
 	// std::stringの2次元配列(vector)
 	using CSVType = std::vector<std::vector<std::string>>;
 
@@ -153,6 +172,7 @@ class RailShoot
 	void addEnemy(const DirectX::XMFLOAT3& pos, const DirectX::XMFLOAT3& vel, float scale = 5.f);
 
 	void changeNextScene();
+	void changeGameOverScene();
 
 	// update_何とか関数を格納する
 	std::function<void()> update_proc;
@@ -168,6 +188,7 @@ public:
 	void update() override;
 	void drawObj3d() override;
 	void drawFrontSprite() override;
+	void end() override;
 
 	~RailShoot();
 

@@ -7,7 +7,8 @@
 #include "SoundBase.h"
 
 SceneManager::SceneManager()
-	: nextScene(nullptr)
+	: nextScene(nullptr),
+	score(new Score())
 {
 	postEff2Num = (UINT)PostEffect::getInstance()->addPipeLine(L"Resources/Shaders/PostEffectPS_2.hlsl");
 
@@ -56,5 +57,6 @@ SceneManager::~SceneManager()
 
 void SceneManager::changeScene(GameScene* nextScene)
 {
+	delete this->nextScene;
 	this->nextScene = nextScene;
 }
