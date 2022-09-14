@@ -5,7 +5,7 @@
 // 以下二つは二回目以降は無視される
 // startDiffBeatCountで開始遅延拍数を指定
 // bpmで曲のbpmを指定
-bpm,120
+bpm,170
 startDiffBeatCount,4
 1,20,0,200
 2,-20,0,200

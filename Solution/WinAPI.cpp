@@ -12,7 +12,7 @@ WinAPI::WinAPI()
 	: windowSize({ window_width, window_height })
 {
 	// 初期状態のウィンドウタイトル
-	constexpr wchar_t winTitleDef[] = L"DX12Game (SE : OtoLogic)";
+	constexpr wchar_t winTitleDef[] = L"3023_リズむし";
 
 	w.cbSize = sizeof(WNDCLASSEX);
 	w.lpfnWndProc = (WNDPROC)WindowProc; // ウィンドウプロシージャを設定
