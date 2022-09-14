@@ -119,7 +119,7 @@ RailShoot::RailShoot()
 	// --------------------
 	// 敵モデル
 	// --------------------
-	enemyModel(std::make_unique<ObjModel>("Resources/sphere", "sphere", 0U, true)),
+	enemyModel(std::make_unique<ObjModel>("Resources/enemy32", "enemy32", 0U, true)),
 	snailModel(std::make_unique<ObjModel>("Resources/snail", "snail", 0U, true)),
 	enemy2Model(std::make_unique<ObjModel>("Resources/likeSeaScorpion", "likeSeaScorpion", 0U, true)),
 	enemyBulModel(std::make_unique<ObjModel>("Resources/sphere", "sphere", 0U, true)),
