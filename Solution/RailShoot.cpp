@@ -120,6 +120,8 @@ RailShoot::RailShoot()
 	// 敵モデル
 	// --------------------
 	enemyModel(std::make_unique<ObjModel>("Resources/sphere", "sphere", 0U, true)),
+	snailModel(std::make_unique<ObjModel>("Resources/snail", "snail", 0U, true)),
+	enemy2Model(std::make_unique<ObjModel>("Resources/likeSeaScorpion", "likeSeaScorpion", 0U, true)),
 	enemyBulModel(std::make_unique<ObjModel>("Resources/sphere", "sphere", 0U, true)),
 
 	// --------------------
@@ -364,8 +366,28 @@ void RailShoot::createParticle(const DirectX::XMFLOAT3& pos,
 
 void RailShoot::addEnemy(const DirectX::XMFLOAT3& pos, const DirectX::XMFLOAT3& vel, float scale)
 {
-	auto& i = enemy.emplace_front(new Enemy(camera.get(), enemyModel.get(), enemyBulModel.get(), pos));
-	i->setScale(scale);
+	// 敵モデルの数。1以上にすること。
+	constexpr UINT enemyNum = 3;
+
+	ObjModel* mod = nullptr;
+
+	constexpr UINT randMax = enemyNum - 1u;
+	const int num = RandomNum::getRand(0, enemyNum);
+	switch (num)
+	{
+	case 0:
+		mod = enemyModel.get();
+		break;
+	case 1:
+		mod = enemy2Model.get();
+		break;
+	case 3:
+	default:
+		mod = snailModel.get();
+	}
+
+	auto& i = enemy.emplace_front(new Enemy(camera.get(), mod, enemyBulModel.get(), pos));
+	i->setScale(scale * 2.f);
 	i->setVel(vel);
 	i->setTargetObj(player.get());
 	i->setParent(railObj->getObj());

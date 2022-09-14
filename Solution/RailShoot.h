@@ -58,6 +58,8 @@ class RailShoot
 	// 敵
 	std::forward_list<std::unique_ptr<Enemy>> enemy;
 	std::unique_ptr<ObjModel> enemyModel;
+	std::unique_ptr<ObjModel> snailModel;
+	std::unique_ptr<ObjModel> enemy2Model;
 	std::unique_ptr<ObjModel> enemyBulModel;
 
 	// 自機
