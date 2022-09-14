@@ -20,6 +20,8 @@
 
 #include "ParticleMgr.h"
 
+#include "Sound.h"
+
 class RailShoot
 	: public GameScene
 {
@@ -31,6 +33,8 @@ class RailShoot
 	std::unique_ptr<Light> light;
 
 	std::unique_ptr<Time> timer;
+
+	std::unique_ptr<Sound> bgm;
 
 	// --------------------
 	// スプライト

@@ -167,6 +167,11 @@ RailShoot::RailShoot()
 	light->setLightPos(camera->getEye());
 
 	// --------------------
+	// bgm初期化
+	// --------------------
+	bgm.reset(new Sound("Resources/10daysJam.wav"));
+
+	// --------------------
 	// レール現在位置のオブジェクト
 	// --------------------
 	/*railObj->setPos(XMFLOAT3(0, 0, 0));
@@ -287,6 +292,9 @@ RailShoot::RailShoot()
 
 void RailShoot::start()
 {
+	// BGM再生
+	Sound::SoundPlayWave(bgm.get(), 0);
+
 	startSceneChangeTime = timer->getNowTime();
 }
 
